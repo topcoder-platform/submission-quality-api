@@ -1,0 +1,9 @@
+.idea
+node_modules/
+*.log
+.DS_Store
+.nyc_output
+coverage/
+.scannerwork/
+docker/api.env
+.env
