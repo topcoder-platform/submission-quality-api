@@ -32,8 +32,8 @@ jobs:
           name: Running MasterScript.
           command: |
             git clone --branch master https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
-            cp ./../buildscript/master_deply_v4.2.sh .
-            ./master_deply_v4.2.sh -d ECS -e DEV -t latest -s submission-quality-api -i submission-quality-api
+            cp ./../buildscript/master_deploy.sh .
+            ./master_deploy.sh -d ECS -e DEV -t latest -s submission-quality-api -i submission-quality-api
   # Build & Deploy against production backend
   "build-prod":
     <<: *defaults
@@ -48,8 +48,8 @@ jobs:
           name: Running MasterScript.
           command: |
             git clone --branch master https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
-            cp ./../buildscript/master_deply_v4.2.sh .
-            #./master_deply_v4.2.sh -d ECS -e PROD  -t latest -s submission-quality-api -i submission-quality-api
+            cp ./../buildscript/mmaster_deploy.sh .
+            #./master_deploy.sh -d ECS -e PROD  -t latest -s submission-quality-api -i submission-quality-api
 workflows:
   version: 2
   build:
