@@ -35,7 +35,7 @@
     "joi": "^14.0.0",
     "lodash": "^4.17.11",
     "superagent": "^3.8.3",
-    "tc-core-library-js": "appirio-tech/tc-core-library-js.git#feature/m2mtoken",
+    "tc-core-library-js": "appirio-tech/tc-core-library-js.git#v2.6",
     "topcoder-healthcheck-dropin": "^1.0.3",
     "uuid": "^3.3.2",
     "winston": "^3.1.0"

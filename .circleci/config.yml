@@ -43,7 +43,7 @@ jobs:
             source awsenvconf
             ./buildenv.sh -e DEV -b dev-submission-quality-api-deployvar
             source buildenvvar
-            ./master_deploy.sh -d ECS -e DEV -t latest -s dev-submission-quality-api-appvar -i submission-quality-api
+            ./master_deploy.sh -d ECS -e DEV -t latest -s dev-global-appvar,dev-submission-quality-api-appvar -i submission-quality-api
   # Build & Deploy against production backend
   "build-prod":
     <<: *defaults
@@ -62,7 +62,7 @@ jobs:
             source awsenvconf
             #./buildenv.sh -e PROD -b prod-submission-quality-api-deployvar
             #source buildenvvar
-            #./master_deploy.sh -d ECS -e PROD -t latest -s prod-submission-quality-api-appvar -i submission-quality-api
+            #./master_deploy.sh -d ECS -e PROD -t latest -s prod-global-appvar,prod-submission-quality-api-appvar -i submission-quality-api
 workflows:
   version: 2
   build:
