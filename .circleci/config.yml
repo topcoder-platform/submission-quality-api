@@ -9,6 +9,13 @@ install_dependency: &install_dependency
             apk add --no-cache jq py-pip sudo
             sudo pip install awscli --upgrade
             sudo pip install docker-compose
+install_deploysuite: &install_deploysuite
+          name: Installation of install_deploysuite.
+          command: |
+            git clone --branch v1.3 https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
+            cp ./../buildscript/master_deploy.sh .
+            cp ./../buildscript/buildenv.sh .
+            cp ./../buildscript/awsconfiguration.sh .            
 restore_cache_settings_for_build: &restore_cache_settings_for_build
   key: docker-node-modules-{{ checksum "package-lock.json" }}
 
@@ -25,15 +32,18 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: *install_dependency
+      - run: *install_deploysuite
       - restore_cache: *restore_cache_settings_for_build
       - run: ./build.sh
       - save_cache: *save_cache_settings
       - deploy:
           name: Running MasterScript.
           command: |
-            git clone --branch v1.1 https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
-            cp ./../buildscript/master_deploy.sh .
-            ./master_deploy.sh -d ECS -e DEV -t latest -s submission-quality-api -i submission-quality-api
+            ./awsconfiguration.sh DEV
+            source awsenvconf
+            ./buildenv.sh -e DEV -b dev-submission-quality-api-deployvar
+            source buildenvvar
+            ./master_deploy.sh -d ECS -e DEV -t latest -s dev-submission-quality-api-appvar -i submission-quality-api
   # Build & Deploy against production backend
   "build-prod":
     <<: *defaults
@@ -41,26 +51,31 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: *install_dependency
+      - run: *install_deploysuite
       - restore_cache: *restore_cache_settings_for_build
       - run: ./build.sh
       - save_cache: *save_cache_settings
       - deploy:
           name: Running MasterScript.
           command: |
-            git clone --branch v1.1 https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
-            cp ./../buildscript/mmaster_deploy.sh .
-            #./master_deploy.sh -d ECS -e PROD  -t latest -s submission-quality-api -i submission-quality-api
+            ./awsconfiguration.sh PROD
+            source awsenvconf
+            #./buildenv.sh -e PROD -b prod-submission-quality-api-deployvar
+            #source buildenvvar
+            #./master_deploy.sh -d ECS -e PROD -t latest -s prod-submission-quality-api-appvar -i submission-quality-api
 workflows:
   version: 2
   build:
     jobs:
       # Development builds are executed on "develop" branch only.
       - "build-dev":
+          context : org-global 
           filters:
             branches:
               only:
                 - develop
       - "build-prod":
+          context : org-global 
           filters:
             branches:
               only:
