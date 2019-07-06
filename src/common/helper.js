@@ -93,8 +93,26 @@ const reqToSubmissionAPI = async (reqType, path, reqBody) => {
   }
 }
 
+/**
+ * Function to send request to V5 API with file
+ * @param {Object} config Configuration object
+ * @param (String) path Complete path of the API URL
+ * @param {Object} formData multiple part form data
+ * @param {String} the file field name in formData
+ * @returns {Promise}
+ */
+const reqToV5APIWithFile = async (path, formData, fileFieldName) => {
+  const token = await getM2Mtoken()
+  return request
+    .post(path)
+    .set('Authorization', `Bearer ${token}`)
+    .field(_.omit(formData, fileFieldName))
+    .attach(fileFieldName, formData[fileFieldName].data, formData[fileFieldName].name)
+}
+
 module.exports = {
   wrapExpress,
   autoWrapExpress,
-  reqToSubmissionAPI
+  reqToSubmissionAPI,
+  reqToV5APIWithFile
 }
