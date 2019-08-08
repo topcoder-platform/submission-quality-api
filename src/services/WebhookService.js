@@ -3,50 +3,48 @@
  */
 
 const joi = require('joi')
-const helper = require('../common/helper')
 const logger = require('../common/logger')
 const uuid = require('uuid/v4')
-const config = require('config')
-const JSZip = require('jszip')
+const { s3upload } = require('../common/helper')
 
-const resultFileName = 'SonarQubeResults'
-const typeId = 'c56a4180-65aa-42ec-a945-5fd21dec0501'
+const { updateSubmissionStatus, uploadArtifacts } = require('./SubmissionService')
+const { getScanResults } = require('./SonarService')
 
 /**
  * Process the scan results received via Webhook from Sonarqube Server
  * @param {Object} body Webhook request body
  * @returns {Promise}
  */
-const processScanResults = async (body) => {
-  const randomId = uuid()
-  // Prepare review payload from Webhook
-  const payload = {
-    score: body.qualityGate.status === 'OK' ? 100 : 0,
-    reviewerId: randomId,
-    submissionId: body.project.key,
-    scoreCardId: randomId,
-    typeId // Request will fail if we don't use existing review type id
-  }
-  await helper.reqToSubmissionAPI('POST', `${config.SUBMISSION_API_URL}/reviews`, payload)
+async function processScanResults (body) {
+  await Promise.all([
+    (async () => {
+      const randomId = uuid()
 
-  const zip = new JSZip()
-  zip.file(`${resultFileName}.json`, JSON.stringify(body, null, 2))
-  const content = await zip.generateAsync({ type: 'nodebuffer' })
-  const artifactPayload = {
-    artifact: {
-      name: `${resultFileName}.zip`,
-      data: content
-    },
-    typeId
-  }
-  await helper.reqToV5APIWithFile(`${config.SUBMISSION_API_URL}/submissions/${body.project.key}/artifacts`, artifactPayload, 'artifact')
+      await updateSubmissionStatus({
+        score: body.qualityGate.status === 'OK' ? 100 : 0,
+        reviewerId: randomId,
+        submissionId: body.project.key,
+        scoreCardId: randomId
+      })
+
+      await uploadArtifacts(body)
+    })(),
+
+    (async () => {
+      const scanResults = await getScanResults(body.project.key, body.analysedAt)
+      await s3upload(`${body.project.key}.json`, JSON.stringify(scanResults), 'application/json')
+    })()
+  ])
 }
 
 processScanResults.schema = {
   body: joi.object().keys({
     serverUrl: joi.string().uri().trim().required(),
     status: joi.string().required(),
-    project: joi.object().required(),
+    analysedAt: joi.string().required(),
+    project: joi.object().keys({
+      key: joi.string().required()
+    }).unknown(true).required(),
     qualityGate: joi.object().required()
   }).unknown(true).required()
 }

@@ -35,7 +35,30 @@ The following parameters can be set in config files or in env variables:
 - LOG_LEVEL: the log level
 - PORT: the server port
 - SUBMISSION_API_URL: Submission API URL
+
+- SONARQUBE_HOST: SonarQube host. Default: http://localhost:9000
+- SONARQUBE_TOKEN: SonarQube access token. Optional parameter, must be set when ACL is configured for the project.
+More details about access tokens - https://docs.sonarqube.org/latest/user-guide/user-token/
+
+- AWS_S3_BUCKET: AWS S3 Bucket name. Bucket must be already exist
+- AWS_S3_PREFIX: AWS S3 Key prefix. Optional parameter. Must end with slash
+
 - All variables starting with prefix `AUTH0` corresponds to Auth0 related credentials
+
+### AWS Credentials
+* Please refer to following [documentation](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html) in order to get AWS credentials.
+* Depending on your Operating System, create AWS credentials file in the path listed below
+```
+Linux, Unix, and macOS users: ~/.aws/credentials
+Windows users: C:\Users\USER_NAME\.aws\credentials
+```
+Credentials file should look like below
+```
+[default]
+aws_access_key_id = SOME_ACCESS_KEY_ID
+aws_secret_access_key = SOME_SECRET_ACCESS_KEY
+```
+* Credentials can be set in environment variables. [Documentation](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html)
 
 ## Local deployment
 
@@ -75,6 +98,12 @@ To run unit tests
 npm run test
 ```
 
+## Code coverage
+
+```
+npm run coverage
+```
+
 ## Local Deployment with Docker
 
 To run the Submission quality processor using docker, follow the below steps
@@ -83,7 +112,7 @@ To run the Submission quality processor using docker, follow the below steps
 
 2. Rename the file `sample.api.env` to `api.env`
 
-3. Set the required Auth0 and Submission API URL in the file `api.env`
+3. Set the required Auth0, Submission API URL, SonarQube config and AWS S3 configuration in the file `api.env`
 
 4. Once that is done, run the following command
 

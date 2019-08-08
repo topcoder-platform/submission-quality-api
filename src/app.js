@@ -10,6 +10,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const httpStatus = require('http-status-codes')
 const _ = require('lodash')
+const sonarService = require('./services/SonarService')
 const helper = require('./common/helper')
 const logger = require('./common/logger')
 const routes = require('./routes')
@@ -30,6 +31,10 @@ app.set('port', config.PORT)
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+
+// configure sonarqube service
+sonarService.configure(config.get('SONARQUBE_HOST'),
+  config.has('SONARQUBE_TOKEN') ? config.get('SONARQUBE_TOKEN') : undefined)
 
 const apiRouter = express.Router()
 

@@ -7,7 +7,8 @@
     "start": "node src/app.js",
     "lint": "standard",
     "lint:fix": "standard --fix",
-    "test": "mocha test/*.test.js --require test/prepare.js --exit"
+    "test": "mocha test/*.test.js --require test/prepare.js --exit",
+    "coverage": "nyc npm run test"
   },
   "engines": {
     "node": "10.x"
@@ -22,9 +23,11 @@
     "chai-as-promised": "^7.1.1",
     "mocha": "^5.2.0",
     "nock": "^10.0.6",
+    "nyc": "^14.1.1",
     "standard": "^12.0.1"
   },
   "dependencies": {
+    "aws-sdk": "^2.503.0",
     "bluebird": "^3.5.5",
     "body-parser": "^1.19.0",
     "config": "^2.0.2",
