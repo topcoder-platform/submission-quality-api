@@ -4,5 +4,6 @@
 
 module.exports = {
   AUTH0_URL: 'http://test', // Since we use Nock, just dummy value stored
-  AWS_S3_BUCKET: 'dummy-bucket'
+  SONARQUBE_HOST: 'http://localhost',
+  SONARQUBE_TOKEN: 'access-token'
 }

@@ -7,7 +7,6 @@ const config = require('config')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
 
-const RESULT_FILE_NAME = 'SonarQubeResults'
 const TYPE_ID = 'c56a4180-65aa-42ec-a945-5fd21dec0501'
 
 /**
@@ -33,26 +32,31 @@ updateSubmissionStatus.schema = joi.object().keys({
 })
 /**
  * Upload submission artifacts
+ * @param {String} submissionId The submission id to upload the artifact to
+ * @param {String} filename Artifact filename
+ * @param {String} typeId Associated artifact type id
  * @param {Object} body Artifacts content
- *
  * @returns {Promise}
  */
-async function uploadArtifacts (body) {
+async function uploadArtifacts (submissionId, filename, typeId, body) {
   const zip = new JSZip()
-  zip.file(`${RESULT_FILE_NAME}.json`, JSON.stringify(body, null, 2))
+  zip.file(`${filename}.json`, JSON.stringify(body, null, 2))
   const content = await zip.generateAsync({ type: 'nodebuffer' })
   const artifactPayload = {
     artifact: {
-      name: `${RESULT_FILE_NAME}.zip`,
+      name: `${filename}.zip`,
       data: content
     },
-    typeId: TYPE_ID
+    typeId: typeId
   }
 
-  return helper.reqToV5APIWithFile(`${config.SUBMISSION_API_URL}/submissions/${body.project.key}/artifacts`, artifactPayload, 'artifact')
+  return helper.reqToV5APIWithFile(`${config.SUBMISSION_API_URL}/submissions/${submissionId}/artifacts`, artifactPayload, 'artifact')
 }
 
 uploadArtifacts.schema = joi.object().keys({
+  submissionId: joi.string().required(),
+  filename: joi.string().required(),
+  typeId: joi.string().required(),
   body: joi.object().required()
 })
 

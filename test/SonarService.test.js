@@ -15,8 +15,6 @@ const PROJECT_KEY = 'test-project'
 describe('SonarService Service Tests', () => {
   describe('SonarQube API /api/measures/search_history response', async () => {
     beforeEach(() => {
-      service.configure('http://localhost')
-
       nock(/\//)
         .get('/api/issues/search')
         .query(true)
@@ -28,8 +26,6 @@ describe('SonarService Service Tests', () => {
     })
 
     it('Should set authorization header when token is configured', async () => {
-      service.configure('http://localhost', 'access-token')
-
       nock(/\//)
         .log(console.log)
         .matchHeader('authorization', 'Basic YWNjZXNzLXRva2VuOg==')

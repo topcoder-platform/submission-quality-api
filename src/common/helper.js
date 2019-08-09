@@ -5,15 +5,9 @@
 const config = require('config')
 const _ = require('lodash')
 const request = require('superagent')
-const AWS = require('aws-sdk')
 
 const m2mAuth = require('tc-core-library-js').auth.m2m
 const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_PROXY_SERVER_URL']))
-
-AWS.config.region = config.REGION
-const s3 = new AWS.S3()
-const AWS_S3_BUCKET = config.get('AWS_S3_BUCKET')
-const AWS_S3_PREFIX = config.get('AWS_S3_PREFIX')
 
 /**
  * Wrap async function to standard express function
@@ -116,29 +110,9 @@ const reqToV5APIWithFile = async (path, formData, fileFieldName) => {
     .attach(fileFieldName, formData[fileFieldName].data, formData[fileFieldName].name)
 }
 
-/**
- * Upload specified content on s3.
- * @param {String} key s3 file key
- * @param {Object} content Content to upload
- * @param {String} contentType Content type
- *
- * @returns {Promise}
- */
-const s3upload = async (key, content, contentType) => {
-  return new Promise((resolve, reject) => {
-    s3.upload({
-      Bucket: AWS_S3_BUCKET,
-      Key: `${AWS_S3_PREFIX}${key}`,
-      ContentType: contentType,
-      Body: content
-    }, err => err ? reject(err) : resolve())
-  })
-}
-
 module.exports = {
   wrapExpress,
   autoWrapExpress,
   reqToSubmissionAPI,
-  reqToV5APIWithFile,
-  s3upload
+  reqToV5APIWithFile
 }

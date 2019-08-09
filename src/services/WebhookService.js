@@ -5,7 +5,6 @@
 const joi = require('joi')
 const logger = require('../common/logger')
 const uuid = require('uuid/v4')
-const { s3upload } = require('../common/helper')
 
 const { updateSubmissionStatus, uploadArtifacts } = require('./SubmissionService')
 const { getScanResults } = require('./SonarService')
@@ -27,12 +26,12 @@ async function processScanResults (body) {
         scoreCardId: randomId
       })
 
-      await uploadArtifacts(body)
+      await uploadArtifacts(body.project.key, 'SonarQubeSummary', 'c56a4180-65aa-42ec-a945-5fd21dec0501', body) // temporary type id
     })(),
 
     (async () => {
       const scanResults = await getScanResults(body.project.key, body.analysedAt)
-      await s3upload(`${body.project.key}.json`, JSON.stringify(scanResults), 'application/json')
+      await uploadArtifacts(body.project.key, 'SonarQubeDetails', '50b917df-5b81-4081-8e20-7fc8a6aabe54', scanResults) // temporary type id
     })()
   ])
 }

@@ -5,6 +5,7 @@ const request = require('superagent')
 const _ = require('lodash')
 const joi = require('joi')
 const logger = require('../common/logger')
+const config = require('config')
 
 // List of issue types that metrics and details must be collected for
 const ISSUE_TYPES = ['code_smells', 'bugs', 'security_hotspots', 'vulnerabilities']
@@ -34,8 +35,8 @@ const ISSUES_SCHEMA = joi.object().keys({
 }).unknown(true).required()
 
 // Configuration
-let SONARQUBE_HOST
-let SONARQUBE_TOKEN
+const SONARQUBE_HOST = config.get('SONARQUBE_HOST')
+const SONARQUBE_TOKEN = config.has('SONARQUBE_TOKEN') ? config.get('SONARQUBE_TOKEN') : undefined
 
 /**
  * Send GET request to SonarQube's endpoint
@@ -185,24 +186,8 @@ getScanResults.schema = joi.object().keys({
   analysedAt: joi.string().required()
 }).required()
 
-/**
- * Configure SonarQube service
- * @param {String} sqHost SonarQube host
- * @param {String} sqToken SonarQube token
- */
-function configure (sqHost, sqToken) {
-  SONARQUBE_HOST = sqHost
-  SONARQUBE_TOKEN = sqToken
-}
-
-configure.schema = joi.object().keys({
-  sqHost: joi.string().required(),
-  sqToken: joi.string()
-}).required()
-
 module.exports = {
-  getScanResults,
-  configure
+  getScanResults
 }
 
 logger.buildService(module.exports)
