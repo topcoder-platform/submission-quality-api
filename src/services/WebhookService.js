@@ -9,31 +9,28 @@ const uuid = require('uuid/v4')
 const { updateSubmissionStatus, uploadArtifacts } = require('./SubmissionService')
 const { getScanResults } = require('./SonarService')
 
+const MAXIMUM_SCORE_CARD_ID = 200000000 // the maximum value of dummy score card id
+
 /**
  * Process the scan results received via Webhook from Sonarqube Server
  * @param {Object} body Webhook request body
  * @returns {Promise}
  */
 async function processScanResults (body) {
-  await Promise.all([
-    (async () => {
-      const randomId = uuid()
+  const randomNumber = Math.floor(Math.random() * MAXIMUM_SCORE_CARD_ID) + 1
 
-      await updateSubmissionStatus({
-        score: body.qualityGate.status === 'OK' ? 100 : 0,
-        reviewerId: randomId,
-        submissionId: body.project.key,
-        scoreCardId: randomId
-      })
+  await updateSubmissionStatus({
+    score: body.qualityGate.status === 'OK' ? 100 : 0,
+    reviewerId: uuid(),
+    submissionId: body.project.key,
+    scoreCardId: randomNumber
+  })
 
-      await uploadArtifacts(body.project.key, 'SonarQubeSummary', 'c56a4180-65aa-42ec-a945-5fd21dec0501', body) // temporary type id
-    })(),
+  await uploadArtifacts(body.project.key, 'SonarQubeSummary', body)
 
-    (async () => {
-      const scanResults = await getScanResults(body.project.key, body.analysedAt)
-      await uploadArtifacts(body.project.key, 'SonarQubeDetails', '50b917df-5b81-4081-8e20-7fc8a6aabe54', scanResults) // temporary type id
-    })()
-  ])
+  const scanResults = await getScanResults(body.project.key, body.analysedAt)
+
+  await uploadArtifacts(body.project.key, 'SonarQubeDetails', scanResults)
 }
 
 processScanResults.schema = {
