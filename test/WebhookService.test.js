@@ -18,6 +18,7 @@ describe('Webhook Service Tests', () => {
     const authUrl = URL.parse(config.AUTH0_URL)
     const subApiUrl = URL.parse(`${config.SUBMISSION_API_URL}/reviews`)
     const artifactUrl = URL.parse(`${config.SUBMISSION_API_URL}/submissions/a34e1158-2c27-4d38-b079-5e5cca1bdcf7/artifacts`)
+    const reviewTypeUrl = URL.parse(`${config.SUBMISSION_API_URL}/reviewTypes?name=SonarQube%20Review&isActive=true&`)
     const { validIssuesResponse, validMeasuresResponse } = require('./testData')
 
     nock(/\//)
@@ -28,6 +29,16 @@ describe('Webhook Service Tests', () => {
       .reply(200)
       .post(artifactUrl.path)
       .reply(200)
+      .get(reviewTypeUrl.path)
+      .reply(200,
+        [
+          {
+            name: 'SonarQube Review',
+            id: 'd96d5f17-5884-47b8-bfea-bddf066e451f',
+            isActive: true
+          }
+        ]
+      )
 
     // SonarQube Web API mocks
     nock(/\//)
