@@ -6,6 +6,8 @@ module.exports = {
   LOG_LEVEL: process.env.LOG_LEVEL || 'debug',
   PORT: process.env.PORT || 3000,
 
+  API_VERSION: process.env.API_VERSION || '/v5/qualityChecks',
+
   SUBMISSION_API_URL: process.env.SUBMISSION_API_URL || 'https://api.topcoder-dev.com/v5',
 
   SONARQUBE_HOST: process.env.SONARQUBE_HOST || 'http://localhost:9000',

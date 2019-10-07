@@ -34,6 +34,7 @@ The following parameters can be set in config files or in env variables:
 
 - LOG_LEVEL: the log level
 - PORT: the server port
+- API_VERSION: The API version
 - SUBMISSION_API_URL: Submission API URL
 
 - SONARQUBE_HOST: SonarQube host. Default: http://localhost:9000

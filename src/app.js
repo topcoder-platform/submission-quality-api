@@ -48,7 +48,7 @@ _.each(routes, (verbs, url) => {
       next()
     })
     actions.push(method)
-    apiRouter[verb](url, helper.autoWrapExpress(actions))
+    apiRouter[verb](`${config.API_VERSION}${url}`, helper.autoWrapExpress(actions))
   })
 })
 
