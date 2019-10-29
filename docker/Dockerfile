@@ -1,5 +1,5 @@
 # Use the base image with Open JDK 8
-FROM node:8.11.3
+FROM node:latest
 
 # Copy the current directory into the Docker image
 COPY . /submission-quality-api
