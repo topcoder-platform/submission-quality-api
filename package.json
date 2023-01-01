@@ -30,7 +30,7 @@
     "@topcoder-platform/topcoder-submission-api-wrapper": "^1.1.0",
     "bluebird": "^3.5.5",
     "body-parser": "^1.19.0",
-    "config": "^2.0.2",
+    "config": "^3.3.8",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "get-parameter-names": "^0.3.0",
